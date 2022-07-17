@@ -92,9 +92,15 @@ async function updateUser(req, res) {
   });
 }
 
-function deleteUser(req, res) {
-  console.log(req.query);
-  res.send(users);
+async function deleteUser(req, res) {
+  //delete data from users object
+  //findOneandDelete selects the document and deletes it
+  let dataToBeDeleted = req.body;
+  let user = await userModel.findOneAndDelete(dataToBeDeleted);
+  res.json({
+    message: "data has been deleted",
+    data: user,
+  });
 }
 
 const db_link =
