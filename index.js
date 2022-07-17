@@ -33,7 +33,9 @@ app.use("/auth", authRouter);
 authRouter
   .route("/signup") //path specific middle ware function
   .get(getSignup)
-  .post(postSignup);
+  .post(postSignup)
+  .patch(updateUser)
+  .delete(deleteUser);
 
 // //middleware function
 // function middleware1(req, res, next) {
@@ -71,6 +73,28 @@ async function postSignup(req, res) {
     message: "user signed-up successfully",
     data: user,
   });
+}
+
+async function updateUser(req, res) {
+  console.log("req-body->", req.body);
+  //update data in users object
+  let dataToBeUpdated = req.body;
+  let user = await userModel.findOneAndUpdate(
+    { email: "hemang@gmail.com" },
+    dataToBeUpdated
+  );
+  // for (key in dataToBeUpdated) {
+  //   users[key] = dataToBeUpdated[key];
+  // }
+  res.json({
+    message: "data updated succesfully",
+    data: user,
+  });
+}
+
+function deleteUser(req, res) {
+  console.log(req.query);
+  res.send(users);
 }
 
 const db_link =
