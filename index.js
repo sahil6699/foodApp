@@ -76,3 +76,61 @@ mongoose
   .catch((err) => {
     console.log("error connecting to db", err);
   });
+
+//schema
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    //if unique: true, it will throw error if duplicate email is entered, anywhere in the db
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+    //if passoword length is less than 8 chars then it will throw error
+    minLength: 8,
+  },
+  confirmPassword: {
+    type: String,
+    required: true,
+  },
+});
+
+//model
+const userModel = mongoose.model("userModel", userSchema);
+
+(async function createUser() {
+  let user = {
+    name: "hemang",
+    email: "hemang@gmail.com",
+    password: "78907890",
+    confirmPassword: "78907890",
+  };
+
+  let data = await userModel.create(user);
+  console.log(data);
+})();
+
+/* MongoServerError: 
+E11000 duplicate key error collection:
+test.usermodels index: email_1 dup key:
+{ email: "sahil@gmail.com" } 
+
+this error is caused by duplicate email
+as we have used unique: true in schema
+*/
+
+/* ValidationError: userModel validation failed:
+password: Path `password` (`7`) is shorter than the minimum allowed length 
+(8). 
+
+this error is caused by minLength: 8 in schema
+bczo the provided password is less than 8 chars
+*/
+
+/* mongodb will also create _id and __v whenever we'll create  new object */
