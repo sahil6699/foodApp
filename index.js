@@ -173,3 +173,21 @@ bczo the provided password is less than 8 chars
 */
 
 /* mongodb will also create _id and __v whenever we'll create  new object */
+
+//hooks in mongoose
+//hooks are used to perform some action before or after the creation of a new document
+
+//currently i don't know why they are not working , i copied the same code from the pepcoding lecture
+//pre hook
+//before save event occurs in db
+userSchema.pre("validate", function (next) {
+  console.log("before saving in db", this);
+  next();
+});
+
+//post hook
+//after save event occurs in db
+userSchema.post("save", function (doc, next) {
+  console.log("after saving in db", doc);
+  next();
+});
