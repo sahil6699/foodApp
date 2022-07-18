@@ -3,6 +3,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
 
+const emailValidator = require("email-validator");
+
 app.use(express.json()); //global middleware function
 
 app.listen(3000, (req, res) => {
@@ -127,6 +129,9 @@ const userSchema = new mongoose.Schema({
     required: true,
     //if unique: true, it will throw error if duplicate email is entered, anywhere in the db
     unique: true,
+    validate: function () {
+      return emailValidator.validate(this.email);
+    },
   },
   password: {
     type: String,
@@ -137,6 +142,9 @@ const userSchema = new mongoose.Schema({
   confirmPassword: {
     type: String,
     required: true,
+    validate: function () {
+      return this.confirmPassword === this.password;
+    },
   },
 });
 
@@ -155,7 +163,35 @@ const userModel = mongoose.model("userModel", userSchema);
 //   console.log(data);
 // })();
 
-/* MongoServerError: 
+/* mongodb will also create _id and __v whenever we'll create  new object */
+
+//hooks in mongoose
+//hooks are used to perform some action before or after the creation of a new document
+
+//currently i don't know why they are not working , i copied the same code from the pepcoding lecture
+//pre hook
+//before save event occurs in db
+// userSchema.pre("validate", function (next) {
+//   console.log("before saving in db", this);
+//   next();
+// });
+
+// //post hook
+// //after save event occurs in db
+// userSchema.post("save", function (doc, next) {
+//   console.log("after saving in db", doc);
+//   next();
+// });
+
+/* here we are making confirmPassword as a virtual field
+virtual field is a field which is not present in the db
+virtual field is used to store the value of confirmPassword
+ */
+userSchema.pre("save", function () {
+  this.confirmPassword = undefined;
+});
+
+/* * MongoServerError: 
 E11000 duplicate key error collection:
 test.usermodels index: email_1 dup key:
 { email: "sahil@gmail.com" } 
@@ -171,23 +207,3 @@ password: Path `password` (`7`) is shorter than the minimum allowed length
 this error is caused by minLength: 8 in schema
 bczo the provided password is less than 8 chars
 */
-
-/* mongodb will also create _id and __v whenever we'll create  new object */
-
-//hooks in mongoose
-//hooks are used to perform some action before or after the creation of a new document
-
-//currently i don't know why they are not working , i copied the same code from the pepcoding lecture
-//pre hook
-//before save event occurs in db
-userSchema.pre("validate", function (next) {
-  console.log("before saving in db", this);
-  next();
-});
-
-//post hook
-//after save event occurs in db
-userSchema.post("save", function (doc, next) {
-  console.log("after saving in db", doc);
-  next();
-});

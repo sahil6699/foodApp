@@ -9,6 +9,7 @@
   "author": "sahil aneja",
   "license": "ISC",
   "dependencies": {
+    "email-validator": "^2.0.4",
     "express": "^4.18.1",
     "mongoose": "^6.4.4"
   }
